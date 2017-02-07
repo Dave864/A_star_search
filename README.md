@@ -6,8 +6,8 @@ This program tests three different heuristics
 - Misplaced Tile
 - Manhattan Distance
 
-# How to Run
-Currently there is no code.
+## How to Run
+Currently there is no working code.
 
-# Known Bugs and Errors
-There is no code
+## Known Bugs and Errors
+There is no working code
