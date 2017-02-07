@@ -10,7 +10,7 @@ struct Node
 	Node *parent;
 	char *state;
 	int path_cost;
-	action last_act;
+	action prev_act;
 
 	Node(char *s, int c = 0, action a = NONE, Node *p = NULL);
 
@@ -25,10 +25,12 @@ class Tree
 	
 	public
 		//Constructor
-		Tree();
+		Tree(char *state);
 
 		//Destructor
 		~Tree();
+
+		void add_child(char *state, action prev_act, int h_cost = 0);
 };
 
 class Problem

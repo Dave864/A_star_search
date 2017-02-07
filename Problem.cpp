@@ -3,7 +3,7 @@
 
 //Node functions
 Node::Node(char *s, int c, action a, Node *p)
-	:path_cost(c), last_act(a), parent(p)
+	:path_cost(c), prev_act(a), parent(p)
 {
 	state = new char[TILE_CNT+1];
 	std::memcpy(state, s, sizeof state);
@@ -15,11 +15,21 @@ Node::~Node()
 }
 
 //Tree functions
-Tree::Tree()
+Tree::Tree(char *state)
 {
+	root = new Node(state);
+	parent = new Node(state);
+	child = new Node(state);
 }
 
 Tree::~Tree()
+{
+	delete root;
+	delete parent;
+	delete child;
+}
+
+void Tree::add_child(char *state, action prev_act, int h_cost)
 {
 }
 
