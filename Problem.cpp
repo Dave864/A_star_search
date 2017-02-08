@@ -2,10 +2,10 @@
 #include <iostream>
 
 //Node functions
-Node::Node(char *s, int c, action a, Node *p)
+Node::Node(int *s, int c, action a, Node *p)
 	:parent(p), path_cost(c), prev_act(a)
 {
-	state = new char[TILE_CNT+1];
+	state = new int[TILE_CNT+1];
 	std::memcpy(state, s, sizeof state);
 }
 
@@ -17,7 +17,7 @@ Node::~Node()
 
 /*
 //Tree functions
-Tree::Tree(char *state)
+Tree::Tree(int *state)
 {
 	root = new Node(state);
 	parent = new Node(state);
@@ -37,24 +37,17 @@ void Tree::add_child(char *state, action prev_act, int h_cost)
 */
 
 //Problem functions
-Problem::Problem(char *input)
+Problem::Problem(int *input)
 {
-	start_state = new char[TILE_CNT+1];
+	start_state = new int[TILE_CNT];
 	std::memcpy(start_state, input, sizeof start_state);
-	goal_state = new char[TILE_CNT+1];
-	for(unsigned int i = 0; i < TILE_CNT+1; i++)
+	goal_state = new int[TILE_CNT];
+	for(unsigned int i = 0; i < TILE_CNT; i++)
 	{
+		goal_state[i] = i+1;
 		if(i == TILE_CNT-1)
 		{
-			goal_state[i] = '\0';
-		}
-		else if(i == TILE_CNT-2)
-		{
-			goal_state[i] = 'b';
-		}
-		else
-		{
-			goal_state[i] = '1'+i;
+			goal_state[i] = 0;
 		}
 	}
 }

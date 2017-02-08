@@ -8,11 +8,11 @@ enum action {UP, DOWN, LEFT, RIGHT, NONE};
 struct Node
 {
 	Node *parent;
-	char *state;
+	int *state;
 	int path_cost;
 	action prev_act;
 
-	Node(char *s, int c = 0, action a = NONE, Node *p = NULL);
+	Node(int *s, int c = 0, action a = NONE, Node *p = NULL);
 
 	~Node();
 };
@@ -25,22 +25,22 @@ struct Node
 	
 	public
 		//Constructor
-		Tree(char *state);
+		Tree(int *state);
 
 		//Destructor
 		~Tree();
 
-		void add_child(char *state, action prev_act, int h_cost = 0);
+		void add_child(int *state, action prev_act, int h_cost = 0);
 };*/
 
 class Problem
 {
-		char *start_state;
-		char *goal_state;
+		int *start_state;
+		int *goal_state;
 
 	public:
 		//Constructor
-		Problem(char *input);
+		Problem(int *input);
 
 		//Destructor
 		~Problem();
