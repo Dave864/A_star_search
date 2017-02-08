@@ -3,7 +3,7 @@
 
 //Node functions
 Node::Node(char *s, int c, action a, Node *p)
-	:path_cost(c), prev_act(a), parent(p)
+	:parent(p), path_cost(c), prev_act(a)
 {
 	state = new char[TILE_CNT+1];
 	std::memcpy(state, s, sizeof state);
@@ -12,8 +12,10 @@ Node::Node(char *s, int c, action a, Node *p)
 Node::~Node()
 {
 	delete state;
+	parent = NULL;
 }
 
+/*
 //Tree functions
 Tree::Tree(char *state)
 {
@@ -32,13 +34,14 @@ Tree::~Tree()
 void Tree::add_child(char *state, action prev_act, int h_cost)
 {
 }
+*/
 
 //Problem functions
-Problem::Problem(int *input)
+Problem::Problem(char *input)
 {
 	start_state = new char[TILE_CNT+1];
 	std::memcpy(start_state, input, sizeof start_state);
-	goal_state = new int[TILE_CNT];
+	goal_state = new char[TILE_CNT+1];
 	for(unsigned int i = 0; i < TILE_CNT+1; i++)
 	{
 		if(i == TILE_CNT-1)

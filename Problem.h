@@ -17,7 +17,7 @@ struct Node
 	~Node();
 };
 
-class Tree
+/*class Tree
 {
 		Node *root;
 		Node *parent;
@@ -31,7 +31,7 @@ class Tree
 		~Tree();
 
 		void add_child(char *state, action prev_act, int h_cost = 0);
-};
+};*/
 
 class Problem
 {
