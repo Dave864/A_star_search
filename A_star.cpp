@@ -3,7 +3,8 @@
 #include <math.h>
 #include "Problem.h"
 
-int puzzle[TILE_CNT] = {8, 7, 6, 5, 4, 3, 2, 1, 0};
+int puzzle[TILE_CNT] = {};
+int valid_numbers[TILE_CNT] = {};
 int puzzle_dimension = (int)sqrt((int)TILE_CNT);
 
 bool isInteger(char *num)
@@ -41,62 +42,117 @@ void customPuzzleMaker()
 {
 	std::string input;
 	printf("Enter your puzzle, use a zero to represent the blank\n");
-	int i = 0;
 	bool valid_num;
-	while(i < puzzle_dimension)
+	bool duplicate_num;
+	int row;
+	do
 	{
-		printf("Enter %d numbers for row %d, use space or tabs between numbers:\t", puzzle_dimension, i+1);
-		std::getline(std::cin, input);
-		char *input_numbers = new char[input.length()+1];
-		std::strcpy(input_numbers, input.c_str());
-		char *number = std::strtok(input_numbers, " \t");
-		//Check to see if enough numbers were entered and if the correct numbers were entered
-		valid_num = true;
-		int num_cnt = 0;
-		while(number != 0)
+		row = 0;
+		while(row < puzzle_dimension)
 		{
-			//If not a number, error
-			if(!isInteger(number))
+			printf("Enter %d numbers for row %d, use space or tabs between numbers:\t", puzzle_dimension, row+1);
+			std::getline(std::cin, input);
+			char *input_chars= new char[input.length()+1];
+			std::strcpy(input_chars, input.c_str());
+			char *number = std::strtok(input_chars, " \t");
+			int *row_vals = new int[puzzle_dimension];
+			//Check to see if enough numbers were entered and if the correct numbers were entered
+			valid_num = true;
+			duplicate_num = false;
+			int num_cnt = 0;
+			for(;number != 0; num_cnt++, number = std::strtok(NULL, " \t"))
 			{
-				valid_num = false;
-				printf("ERROR: Number %s is not a number\n", number);
+				int num_val = 0;
+				//If not a number, error
+				if(!isInteger(number))
+				{
+					valid_num = false;
+					printf("ERROR: Number %s is not a number\n", number);
+				}
+				//If a negative number, error
+				else if(number[0] == '-')
+				{
+					valid_num = false;
+					printf("ERROR: Number %s is negative\n", number);
+				}
+				//If too big a number, error
+				else if((num_val = (int)strtol(number, NULL, 10)) > TILE_CNT-1)
+				{
+					valid_num = false;
+					printf("ERROR: Number %s is too big\n", number); 
+				}
+				//Add number to row_vals
+				else
+				{
+					if(num_cnt < puzzle_dimension)
+					{
+						row_vals[num_cnt] = num_val;
+					}	
+				}
 			}
-			//If a negative number, error
-			else if(number[0] == '-')
+			if(!valid_num)
 			{
-				valid_num = false;
-				printf("ERROR: Number %s is negative\n", number);
+				printf("       Valid inputs are whole numbers from 0 - %d\n", TILE_CNT-1);
+				delete[] input_chars;
+				delete[] row_vals;
+				continue;
 			}
-			//If too big a number, error
-			else if((int)strtol(number, NULL, 10) > TILE_CNT-1)
+			//Check for correct number of numbers
+			if(num_cnt != puzzle_dimension)
 			{
-				valid_num = false;
-				printf("ERROR: Number %s is too big\n", number); 
+				printf("ERROR: %d number(s) were entered for row %d\n", num_cnt, row+1);
+				delete[] input_chars;
+				delete[] row_vals;
+				continue;
 			}
-			number = std::strtok(NULL, " \t");
-			num_cnt++;
+			//add input to puzzle
+			for(int col = 0; col < puzzle_dimension; col++)
+			{
+				puzzle[(puzzle_dimension*row)+col] = row_vals[col];
+			}
+			delete[] input_chars;
+			delete[] row_vals;
+			row++;
 		}
-		if(!valid_num)
+		//Check for duplicate numbers
+		printf("The puzzle you entered is\n");
+		for(int i = 0; i < puzzle_dimension; i++)
 		{
-			printf("       Valid inputs are whole numbers from 0 - %d\n", TILE_CNT-1);
-			delete[] input_numbers;
-			continue;
+			for(int j = 0; j < puzzle_dimension; j++)
+			{
+				printf("%d ", puzzle[(puzzle_dimension*i)+j]);
+				if(valid_numbers[puzzle[(puzzle_dimension*i)+j]] < 0)
+				{
+					duplicate_num = true;
+				}
+				else
+				{
+					valid_numbers[puzzle[(puzzle_dimension*i)+j]] = -1;
+				}
+			}
+			printf("\n");
 		}
-		//Check for correct number of numbers
-		if(num_cnt != puzzle_dimension)
+		if(duplicate_num)
 		{
-			printf("ERROR: %d number(s) were entered for row %d\n", num_cnt, i+1);
-			delete[] input_numbers;
-			continue;
+			printf("ERROR: You have entered duplicate numbers into your puzzle\n");
+			printf("       Please enter a new puzzle with no duplicate numbers\n");
+			//Reinitialize the valid_numbers
+			for(int i = 0; i < TILE_CNT; i++)
+			{
+				valid_numbers[i] = i;
+			}
 		}
-		//Errors: duplicate numbers in the array
-		delete[] input_numbers;
-		i++;
-	}
+	}while(duplicate_num);
 }
 
 int main(int argc, char **argv)
 {
+	//initialize default puzzle and valid_numbers
+	for(int i = 0; i < TILE_CNT; i++)
+	{
+		puzzle[i] = TILE_CNT-i-1;
+		valid_numbers[i] = i;
+	}
 	printf("Welcome to %s's %d-puzzle solver.\n", "amacp001", TILE_CNT-1);
 	printf("Type \"1\" to use a default puzzle, or \"2\" to enter your own puzzle\n");
 	std::string choice;
