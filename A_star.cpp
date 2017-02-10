@@ -8,7 +8,33 @@ int puzzle_dimension = (int)sqrt((int)TILE_CNT);
 
 bool isInteger(char *num)
 {
-	return false;
+	if(num[0] == '-')
+	{
+		if(num[1] == '\0')
+		{
+			return false;
+		}
+		for(int i = 1; num[i] != '\0'; i++)
+		{
+			if(!isdigit(num[i]))
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+	else
+	{
+		for(int i = 0; num[i] != '\0'; i++)
+		{
+			if(!isdigit(num[i]))
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+
 }
 
 void customPuzzleMaker()
@@ -30,17 +56,22 @@ void customPuzzleMaker()
 		while(number != 0)
 		{
 			//If not a number, error
-			if(isInteger(number))
+			if(!isInteger(number))
 			{
 				valid_num = false;
 				printf("ERROR: Number %s is not a number\n", number);
 			}
-			//If not a valid number, error
-			else if(0)
+			//If a negative number, error
+			else if(number[0] == '-')
 			{
 				valid_num = false;
-				printf("ERROR: Number %d is negative\n", 1);
-				printf("ERROR: Number %d is too big\n", 1); 
+				printf("ERROR: Number %s is negative\n", number);
+			}
+			//If too big a number, error
+			else if((int)strtol(number, NULL, 10) > TILE_CNT-1)
+			{
+				valid_num = false;
+				printf("ERROR: Number %s is too big\n", number); 
 			}
 			number = std::strtok(NULL, " \t");
 			num_cnt++;
