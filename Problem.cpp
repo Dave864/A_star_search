@@ -2,17 +2,32 @@
 #include <iostream>
 
 //Node functions
-Node::Node(int *s, int c, action a, Node *p)
-	:parent(p), path_cost(c), prev_act(a)
+Node::Node(int *s, int c, int h, action a, Node *p)
+:parent(p), path_cost(c), h_cost(h), prev_act(a)
 {
-	state = new int[TILE_CNT+1];
-	std::memcpy(state, s, sizeof state);
+	state = new int[TILE_CNT];
+	memcpy(state, s, sizeof state);
 }
 
 Node::~Node()
 {
-	delete state;
+	delete[] state;
 	parent = NULL;
+}
+
+bool Node::operator <(Node &rhs)
+{
+	return((this->path_cost + this->h_cost) < (rhs.path_cost + rhs.h_cost));
+}
+
+bool Node::operator >(Node &rhs)
+{
+	return((this->path_cost + this->h_cost) > (rhs.path_cost + rhs.h_cost));
+}
+
+bool Node::operator ==(Node &rhs)
+{
+	return((this->path_cost + this->h_cost) == (rhs.path_cost + rhs.h_cost));
 }
 
 /*
@@ -20,21 +35,19 @@ Node::~Node()
 Tree::Tree(int *state)
 {
 	root = new Node(state);
-	parent = new Node(state);
-	child = new Node(state);
+	cur = NULL;
 }
 
 Tree::~Tree()
 {
 	delete root;
-	delete parent;
-	delete child;
+	delete cur;
 }
 
 void Tree::add_child(char *state, action prev_act, int h_cost)
 {
-}
-*/
+}*/
+
 
 //Problem functions
 Problem::Problem(int *input)
@@ -54,22 +67,36 @@ Problem::Problem(int *input)
 
 Problem::~Problem()
 {
-	delete start_state;
-	delete goal_state;
+	delete[] start_state;
+	delete[] goal_state;
 }
 
-void Problem::move_blank_up()
+int* Problem::getStart()
 {
+	return start_state;
 }
 
-void Problem::move_blank_down()
+int* Problem::getGoal()
 {
+	return goal_state;
 }
 
-void Problem::move_blank_left()
+Node* Problem::moveBlankUp(Node *cur)
 {
+	return NULL;
 }
 
-void Problem::move_blank_right()
+Node* Problem::moveBlankDown(Node *cur)
 {
+	return NULL;
+}
+
+Node* Problem::moveBlankLeft(Node *cur)
+{
+	return NULL;
+}
+
+Node* Problem::moveBlankRight(Node *cur)
+{
+	return NULL;
 }

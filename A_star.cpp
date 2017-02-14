@@ -1,11 +1,37 @@
 #include <iostream>
+#include <queue>
+#include <vector>
 #include <string.h>
 #include <math.h>
 #include "Problem.h"
 
+class nodeComparison
+{
+	bool reverse;
+	public:
+		nodeComparison(bool revparam = false)
+		{
+			reverse = revparam;
+		}
+		bool operator() (Node *lhs, Node *rhs)
+		{
+			if(reverse)
+			{
+				return ((lhs->path_cost + lhs->h_cost) > (rhs->path_cost + rhs->h_cost));
+			}
+			else
+			{
+				return ((lhs->path_cost + lhs->h_cost) < (rhs->path_cost + rhs->h_cost));
+			}
+		}
+};
+
 int puzzle[TILE_CNT] = {};
 int valid_numbers[TILE_CNT] = {};
 int puzzle_dimension = (int)sqrt((int)TILE_CNT);
+std::vector<int*> explored;
+std::vector<Node> frontier_contents;
+std::priority_queue<Node*, std::vector<Node*>, nodeComparison> frontier;
 
 bool isInteger(char *num)
 {
@@ -145,6 +171,11 @@ void customPuzzleMaker()
 	}while(duplicate_num);
 }
 
+void graphSearch(Problem tile_problem)
+{
+	return;
+}
+
 int main(int argc, char **argv)
 {
 	//initialize default puzzle and valid_numbers
@@ -168,5 +199,7 @@ int main(int argc, char **argv)
 	{
 		customPuzzleMaker();
 	}
+	Problem my_problem(puzzle);
+	graphSearch(my_problem);
 	return 0;
 }

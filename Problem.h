@@ -10,17 +10,22 @@ struct Node
 	Node *parent;
 	int *state;
 	int path_cost;
+	int h_cost;
 	action prev_act;
 
-	Node(int *s, int c = 0, action a = NONE, Node *p = NULL);
+	Node(int *s, int c = 0, int h = 0, action a = NONE, Node *p = NULL);
 
 	~Node();
+
+	bool operator <(Node &rhs);
+	bool operator >(Node &rhs);
+	bool operator ==(Node &rhs);
 };
 
-/*class Tree
+/*
+class Tree
 {
 		Node *root;
-		Node *parent;
 		Node *cur;
 	
 	public
@@ -45,11 +50,14 @@ class Problem
 		//Destructor
 		~Problem();
 
+		int* getStart();
+		int* getGoal();
+
 		//Operators
-		void move_blank_up();
-		void move_blank_down();
-		void move_blank_left();
-		void move_blank_right();
+		Node* moveBlankUp(Node *cur);
+		Node* moveBlankDown(Node *cur);
+		Node* moveBlankLeft(Node *cur);
+		Node* moveBlankRight(Node *cur);
 };
 
 #endif
