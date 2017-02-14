@@ -2,7 +2,9 @@
 #define PROBLEM_H
 
 #include <iostream>
+#include <math.h>
 #define TILE_CNT 9 //The total number of spaces on the board
+#define PUZZLE_DIMENSION (int)(sqrt(TILE_CNT)) //The dimensions of the puzzle
 enum action {UP, DOWN, LEFT, RIGHT, NONE};
 
 struct Node
@@ -14,6 +16,7 @@ struct Node
 	action prev_act;
 
 	Node(int *s, int c = 0, int h = 0, action a = NONE, Node *p = NULL);
+	Node(const Node &og_node);
 
 	~Node();
 
@@ -42,6 +45,8 @@ class Problem
 {
 		int *start_state;
 		int *goal_state;
+
+		int getBlankIndex(int *state);
 
 	public:
 		//Constructor

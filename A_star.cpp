@@ -2,9 +2,9 @@
 #include <queue>
 #include <vector>
 #include <string.h>
-#include <math.h>
 #include "Problem.h"
 
+//Node comparison class for use in the frontier priority queue
 class nodeComparison
 {
 	bool reverse;
@@ -28,11 +28,11 @@ class nodeComparison
 
 int puzzle[TILE_CNT] = {};
 int valid_numbers[TILE_CNT] = {};
-int puzzle_dimension = (int)sqrt((int)TILE_CNT);
-std::vector<int*> explored;
+std::vector<Node> explored;
 std::vector<Node> frontier_contents;
 std::priority_queue<Node*, std::vector<Node*>, nodeComparison> frontier;
 
+//Checks if a char array is a positive or negative whole number
 bool isInteger(char *num)
 {
 	if(num[0] == '-')
@@ -64,6 +64,7 @@ bool isInteger(char *num)
 
 }
 
+//GUI for making a custom puzzle
 void customPuzzleMaker()
 {
 	std::string input;
@@ -74,14 +75,14 @@ void customPuzzleMaker()
 	do
 	{
 		row = 0;
-		while(row < puzzle_dimension)
+		while(row < PUZZLE_DIMENSION)
 		{
-			printf("Enter %d numbers for row %d, use space or tabs between numbers:\t", puzzle_dimension, row+1);
+			printf("Enter %d numbers for row %d, use space or tabs between numbers:\t", PUZZLE_DIMENSION, row+1);
 			std::getline(std::cin, input);
 			char *input_chars= new char[input.length()+1];
 			std::strcpy(input_chars, input.c_str());
 			char *number = std::strtok(input_chars, " \t");
-			int *row_vals = new int[puzzle_dimension];
+			int *row_vals = new int[PUZZLE_DIMENSION];
 			//Check to see if enough numbers were entered and if the correct numbers were entered
 			valid_num = true;
 			duplicate_num = false;
@@ -110,7 +111,7 @@ void customPuzzleMaker()
 				//Add number to row_vals
 				else
 				{
-					if(num_cnt < puzzle_dimension)
+					if(num_cnt < PUZZLE_DIMENSION)
 					{
 						row_vals[num_cnt] = num_val;
 					}	
@@ -124,7 +125,7 @@ void customPuzzleMaker()
 				continue;
 			}
 			//Check for correct number of numbers
-			if(num_cnt != puzzle_dimension)
+			if(num_cnt != PUZZLE_DIMENSION)
 			{
 				printf("ERROR: %d number(s) were entered for row %d\n", num_cnt, row+1);
 				delete[] input_chars;
@@ -132,9 +133,9 @@ void customPuzzleMaker()
 				continue;
 			}
 			//add input to puzzle
-			for(int col = 0; col < puzzle_dimension; col++)
+			for(int col = 0; col < PUZZLE_DIMENSION; col++)
 			{
-				puzzle[(puzzle_dimension*row)+col] = row_vals[col];
+				puzzle[(PUZZLE_DIMENSION*row)+col] = row_vals[col];
 			}
 			delete[] input_chars;
 			delete[] row_vals;
@@ -142,18 +143,18 @@ void customPuzzleMaker()
 		}
 		//Check for duplicate numbers
 		printf("The puzzle you entered is\n");
-		for(int i = 0; i < puzzle_dimension; i++)
+		for(int i = 0; i < PUZZLE_DIMENSION; i++)
 		{
-			for(int j = 0; j < puzzle_dimension; j++)
+			for(int j = 0; j < PUZZLE_DIMENSION; j++)
 			{
-				printf("%d ", puzzle[(puzzle_dimension*i)+j]);
-				if(valid_numbers[puzzle[(puzzle_dimension*i)+j]] < 0)
+				printf("%d ", puzzle[(PUZZLE_DIMENSION*i)+j]);
+				if(valid_numbers[puzzle[(PUZZLE_DIMENSION*i)+j]] < 0)
 				{
 					duplicate_num = true;
 				}
 				else
 				{
-					valid_numbers[puzzle[(puzzle_dimension*i)+j]] = -1;
+					valid_numbers[puzzle[(PUZZLE_DIMENSION*i)+j]] = -1;
 				}
 			}
 			printf("\n");
@@ -171,8 +172,49 @@ void customPuzzleMaker()
 	}while(duplicate_num);
 }
 
-void graphSearch(Problem tile_problem)
+//Compares the contents of two int arrays and returns true if they are the same
+bool sameState(const int *lhs, const int *rhs)
 {
+	for(int i = 0; i < TILE_CNT; i++)
+	{
+		if(lhs[i] != rhs[i])
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+//Expands the leaf node into its child components
+void expand(Problem &tile_problem, Node *leaf/*, heuristic*/)
+{
+	return;
+}
+
+//The main loop of the A_star search
+void graphSearch(Problem tile_problem/*, heuristic*/)
+{
+	Node start(tile_problem.getStart());
+	frontier.push(&start);
+	frontier_contents.push_back(start);
+	while(1)
+	{
+		if(frontier.empty())
+		{
+			//Failure
+			return;
+		}
+		Node *leaf = frontier.top();
+		frontier.pop();
+		if(sameState(tile_problem.getGoal(), leaf->state))
+		{
+			//Success, return path from leaf to root
+			return;
+		}
+		explored.push_back(*leaf);
+		expand(tile_problem, leaf);
+		return;
+	}
 	return;
 }
 

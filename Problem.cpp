@@ -9,6 +9,16 @@ Node::Node(int *s, int c, int h, action a, Node *p)
 	memcpy(state, s, sizeof state);
 }
 
+Node::Node(const Node &og_node)
+{
+	parent = og_node.parent;
+	path_cost = og_node.path_cost;
+	h_cost = og_node.h_cost;
+	prev_act = og_node.prev_act;
+	state = new int[TILE_CNT];
+	memcpy(state, og_node.state, sizeof state);
+}
+
 Node::~Node()
 {
 	delete[] state;
@@ -71,6 +81,18 @@ Problem::~Problem()
 	delete[] goal_state;
 }
 
+int Problem::getBlankIndex(int *state)
+{
+	for(int index = 0; index < TILE_CNT; index++)
+	{
+		if(state[index] == 0)
+		{
+			return index;
+		}
+	}
+	return -1;
+}
+
 int* Problem::getStart()
 {
 	return start_state;
@@ -83,20 +105,56 @@ int* Problem::getGoal()
 
 Node* Problem::moveBlankUp(Node *cur)
 {
-	return NULL;
+	int blank_ind = getBlankIndex(cur->state);
+	if((blank_ind - PUZZLE_DIMENSION) < 0)
+	{
+		return NULL;
+	}
+	int *new_state = new int[TILE_CNT];
+	std::memcpy(new_state, cur->state, sizeof new_state);
+	Node *child = new Node(new_state, cur->path_cost + 1, 0, UP, cur);
+	delete[] new_state;
+	return child;
 }
 
 Node* Problem::moveBlankDown(Node *cur)
 {
-	return NULL;
+	int blank_ind = getBlankIndex(cur->state);
+	if((blank_ind + PUZZLE_DIMENSION) >= TILE_CNT)
+	{
+		return NULL;
+	}
+	int *new_state = new int[TILE_CNT];
+	std::memcpy(new_state, cur->state, sizeof new_state);
+	Node *child = new Node(new_state, cur->path_cost + 1, 0, DOWN, cur);
+	delete[] new_state;
+	return child;
 }
 
 Node* Problem::moveBlankLeft(Node *cur)
 {
-	return NULL;
+	int blank_ind = getBlankIndex(cur->state);
+	if((blank_ind % PUZZLE_DIMENSION) == 0)
+	{
+		return NULL;
+	}
+	int *new_state = new int[TILE_CNT];
+	std::memcpy(new_state, cur->state, sizeof new_state);
+	Node *child = new Node(new_state, cur->path_cost + 1, 0, LEFT, cur);
+	delete[] new_state;
+	return child;
 }
 
 Node* Problem::moveBlankRight(Node *cur)
 {
-	return NULL;
+	int blank_ind = getBlankIndex(cur->state);
+	if(((blank_ind + 1) % PUZZLE_DIMENSION) == 0)
+	{
+		return NULL;
+	}
+	int *new_state = new int[TILE_CNT];
+	std::memcpy(new_state, cur->state, sizeof new_state);
+	Node *child = new Node(new_state, cur->path_cost + 1, 0, RIGHT, cur);
+	delete[] new_state;
+	return child;
 }
