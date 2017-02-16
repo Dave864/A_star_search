@@ -1,5 +1,4 @@
 #include <iostream>
-#include <algorithm>
 #include <queue>
 #include <vector>
 #include <string.h>
@@ -18,11 +17,11 @@ class nodeComparison
 		{
 			if(reverse)
 			{
-				return (*lhs > *rhs);
+				return ((lhs->path_cost + lhs->h_cost) > (rhs->path_cost + rhs->h_cost));
 			}
 			else
 			{
-				return (*lhs < *rhs);
+				return ((lhs->path_cost + lhs->h_cost) < (rhs->path_cost + rhs->h_cost));
 			}
 		}
 };
@@ -186,93 +185,9 @@ bool sameState(const int *lhs, const int *rhs)
 	return true;
 }
 
-//Checks to see if the state of the node is in the frontier
-bool inFrontier(Node *node)
-{
-	for(unsigned int i = 0; i < frontier_contents.size(); i++)
-	{
-		if(sameState(node->state, frontier_contents[i].state))
-		{
-			return true;
-		}
-	}
-	return false;
-}
-
-//Checks to see if the state of the node in in the explored set
-bool inExplored(Node *node)
-{
-	for(unsigned int i = 0; i < explored.size(); i++)
-	{
-		if(sameState(node->state, explored[i].state))
-		{
-			return true;
-		}
-	}
-	return false;
-}
-
-//Removes node from frontier_contents
-void removeFrontierContent(Node *node)
-{
-	for(unsigned int i = 0; i < frontier_contents.size(); i++)
-	{
-		if(sameState(node->state, frontier_contents[i].state))
-		{
-			frontier_contents.erase(frontier_contents.begin()+i);
-			return;
-		}
-	}
-	return;
-}
-
 //Expands the leaf node into its child components
 void expand(Problem &tile_problem, Node *leaf/*, heuristic*/)
 {
-	//Expand by moving the blank left
-	Node *left_child = tile_problem.moveBlankLeft(leaf);
-	if(left_child != NULL)
-	{
-		if(!inExplored(left_child) || !inFrontier(left_child))
-		{
-			//apply heuristic
-			frontier.push(left_child);
-			frontier_contents.push_back(*left_child);
-		}
-	}
-	//Expand by moving the blank right
-	Node *right_child = tile_problem.moveBlankRight(leaf);
-	if(right_child != NULL)
-	{
-		//apply heuristic
-		if(!inExplored(right_child) || !inFrontier(right_child))
-		{
-			frontier.push(left_child);
-			frontier_contents.push_back(*left_child);
-		}
-	}
-	//Expand by moving the blank up
-	Node *up_child = tile_problem.moveBlankUp(leaf);
-	if(up_child != NULL)
-	{
-		if(!inExplored(up_child) || !inFrontier(up_child))
-		{
-			//apply heuristic
-			frontier.push(up_child);
-			frontier_contents.push_back(*up_child);
-		}
-	}
-	//Expand by moving the blank down
-	Node *down_child = tile_problem.moveBlankDown(leaf);
-	if(down_child != NULL)
-	{
-		if(!inExplored(down_child) || !inFrontier(down_child))
-		{
-			//apply heuristic
-			frontier.push(down_child);
-			frontier_contents.push_back(*down_child);
-		}
-	}
 	return;
 }
 
@@ -287,20 +202,18 @@ void graphSearch(Problem tile_problem/*, heuristic*/)
 		if(frontier.empty())
 		{
 			//Failure
-			printf("Failed to solve the puzzle.\n");
 			return;
 		}
 		Node *leaf = frontier.top();
 		frontier.pop();
-		removeFrontierContent(leaf);
 		if(sameState(tile_problem.getGoal(), leaf->state))
 		{
 			//Success, return path from leaf to root
-			printf("Successfully solved the puzzle!\n");
 			return;
 		}
 		explored.push_back(*leaf);
 		expand(tile_problem, leaf);
+		return;
 	}
 	return;
 }
