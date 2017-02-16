@@ -27,12 +27,25 @@ Node::~Node()
 
 void Node::pstate()
 {
-	printf("{ ");
 	for(unsigned i = 0; i < TILE_CNT; i++)
 	{
-		printf("%d ", state[i]);
+		if((i % PUZZLE_DIMENSION) == 0)
+		{
+			printf("\t");
+		}
+		if(state[i] == 0)
+		{
+			printf("b ");
+		}
+		else
+		{
+			printf("%d ", state[i]);
+		}
+		if(((i + 1) % PUZZLE_DIMENSION) == 0)
+		{
+			printf("\n");
+		}
 	}
-	printf("}\n");
 }
 
 /*bool Node::operator <(Node &rhs)
@@ -122,6 +135,8 @@ Node* Problem::moveBlankUp(Node &cur)
 	}
 	int *new_state = new int[TILE_CNT];
 	std::memcpy(new_state, cur.state, sizeof (int[TILE_CNT]));
+	new_state[blank_ind] = new_state[blank_ind - PUZZLE_DIMENSION];
+	new_state[blank_ind - PUZZLE_DIMENSION] = 0;
 	Node *child = new Node(new_state, cur.path_cost + 1, 0, UP, &cur);
 	delete[] new_state;
 	return child;
@@ -136,6 +151,8 @@ Node* Problem::moveBlankDown(Node &cur)
 	}
 	int *new_state = new int[TILE_CNT];
 	std::memcpy(new_state, cur.state, sizeof (int[TILE_CNT]));
+	new_state[blank_ind] = new_state[blank_ind + PUZZLE_DIMENSION];
+	new_state[blank_ind + PUZZLE_DIMENSION] = 0;
 	Node *child = new Node(new_state, cur.path_cost + 1, 0, DOWN, &cur);
 	delete[] new_state;
 	return child;
@@ -150,6 +167,8 @@ Node* Problem::moveBlankLeft(Node &cur)
 	}
 	int *new_state = new int[TILE_CNT];
 	std::memcpy(new_state, cur.state, sizeof (int[TILE_CNT]));
+	new_state[blank_ind] = new_state[blank_ind - 1];
+	new_state[blank_ind - 1] = 0;
 	Node *child = new Node(new_state, cur.path_cost + 1, 0, LEFT, &cur);
 	delete[] new_state;
 	return child;
@@ -164,6 +183,8 @@ Node* Problem::moveBlankRight(Node &cur)
 	}
 	int *new_state = new int[TILE_CNT];
 	std::memcpy(new_state, cur.state, sizeof(int[TILE_CNT]));
+	new_state[blank_ind] = new_state[blank_ind + 1];
+	new_state[blank_ind + 1] = 0;
 	Node *child = new Node(new_state, cur.path_cost + 1, 0, RIGHT, &cur);
 	delete[] new_state;
 	return child;

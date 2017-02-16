@@ -7,11 +7,10 @@
 //Node comparison class for use in the frontier priority queue
 class nodeComparison
 {
-	bool reverse;
 	public:
 		bool operator() (Node *lhs, Node *rhs)
 		{
-			return ((lhs->path_cost + lhs->h_cost) < (rhs->path_cost + rhs->h_cost));
+			return ((lhs->path_cost + lhs->h_cost) > (rhs->path_cost + rhs->h_cost));
 		}
 };
 
@@ -131,12 +130,12 @@ void customPuzzleMaker()
 			row++;
 		}
 		//Check for duplicate numbers
-		printf("The puzzle you entered is\n");
+		//printf("The puzzle you entered is\n");
 		for(int i = 0; i < PUZZLE_DIMENSION; i++)
 		{
 			for(int j = 0; j < PUZZLE_DIMENSION; j++)
 			{
-				printf("%d ", puzzle[(PUZZLE_DIMENSION*i)+j]);
+				//printf("%d ", puzzle[(PUZZLE_DIMENSION*i)+j]);
 				if(valid_numbers[puzzle[(PUZZLE_DIMENSION*i)+j]] < 0)
 				{
 					duplicate_num = true;
@@ -146,7 +145,7 @@ void customPuzzleMaker()
 					valid_numbers[puzzle[(PUZZLE_DIMENSION*i)+j]] = -1;
 				}
 			}
-			printf("\n");
+			//printf("\n");
 		}
 		if(duplicate_num)
 		{
@@ -159,6 +158,23 @@ void customPuzzleMaker()
 			}
 		}
 	}while(duplicate_num);
+}
+
+//Display to std output what the current step of the algorithm is
+void printStep(Node *node)
+{
+	if(node->parent == NULL)
+	{
+		printf("Expanding state\n");
+		node->pstate();
+	}
+	else
+	{
+		printf("The best state to expand with a g(n) = %d and h(n) = %d is...\n", node->path_cost, node->h_cost);
+		node->pstate();
+		printf("\tExpanding this node\n");
+	}
+	printf("\n");
 }
 
 //Compares the contents of two int arrays and returns true if they are the same
@@ -269,9 +285,10 @@ void graphSearch(Problem tile_problem/*, heuristic*/)
 		if(sameState(tile_problem.getGoal(), leaf.state))
 		{
 			//Success, return path from leaf to root
-			printf("Found a solution\n");
+			printf("Goal!!\n");
 			return;
 		}
+		printStep(&leaf);
 		explored.push_back(leaf);
 		expand(tile_problem, leaf);
 	}
