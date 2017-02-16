@@ -20,9 +20,11 @@ struct Node
 
 	~Node();
 
-	bool operator <(Node &rhs);
+	void pstate();
+
+	/*bool operator <(Node &rhs);
 	bool operator >(Node &rhs);
-	bool operator ==(Node &rhs);
+	bool operator ==(Node &rhs);*/
 };
 
 /*
@@ -59,10 +61,10 @@ class Problem
 		int* getGoal();
 
 		//Operators
-		Node* moveBlankUp(Node *cur);
-		Node* moveBlankDown(Node *cur);
-		Node* moveBlankLeft(Node *cur);
-		Node* moveBlankRight(Node *cur);
+		Node* moveBlankUp(Node &cur);
+		Node* moveBlankDown(Node &cur);
+		Node* moveBlankLeft(Node &cur);
+		Node* moveBlankRight(Node &cur);
 };
 
 #endif

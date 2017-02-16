@@ -6,7 +6,7 @@ Node::Node(int *s, int c, int h, action a, Node *p)
 :parent(p), path_cost(c), h_cost(h), prev_act(a)
 {
 	state = new int[TILE_CNT];
-	memcpy(state, s, sizeof state);
+	memcpy(state, s, sizeof (int[TILE_CNT]));
 }
 
 Node::Node(const Node &og_node)
@@ -16,7 +16,7 @@ Node::Node(const Node &og_node)
 	h_cost = og_node.h_cost;
 	prev_act = og_node.prev_act;
 	state = new int[TILE_CNT];
-	memcpy(state, og_node.state, sizeof state);
+	memcpy(state, og_node.state, sizeof (int[TILE_CNT]));
 }
 
 Node::~Node()
@@ -25,7 +25,17 @@ Node::~Node()
 	parent = NULL;
 }
 
-bool Node::operator <(Node &rhs)
+void Node::pstate()
+{
+	printf("{ ");
+	for(unsigned i = 0; i < TILE_CNT; i++)
+	{
+		printf("%d ", state[i]);
+	}
+	printf("}\n");
+}
+
+/*bool Node::operator <(Node &rhs)
 {
 	return((this->path_cost + this->h_cost) < (rhs.path_cost + rhs.h_cost));
 }
@@ -38,7 +48,7 @@ bool Node::operator >(Node &rhs)
 bool Node::operator ==(Node &rhs)
 {
 	return((this->path_cost + this->h_cost) == (rhs.path_cost + rhs.h_cost));
-}
+}*/
 
 /*
 //Tree functions
@@ -63,7 +73,7 @@ void Tree::add_child(char *state, action prev_act, int h_cost)
 Problem::Problem(int *input)
 {
 	start_state = new int[TILE_CNT];
-	std::memcpy(start_state, input, sizeof start_state);
+	std::memcpy(start_state, input, sizeof (int[TILE_CNT]));
 	goal_state = new int[TILE_CNT];
 	for(unsigned int i = 0; i < TILE_CNT; i++)
 	{
@@ -103,58 +113,58 @@ int* Problem::getGoal()
 	return goal_state;
 }
 
-Node* Problem::moveBlankUp(Node *cur)
+Node* Problem::moveBlankUp(Node &cur)
 {
-	int blank_ind = getBlankIndex(cur->state);
+	int blank_ind = getBlankIndex(cur.state);
 	if((blank_ind - PUZZLE_DIMENSION) < 0)
 	{
 		return NULL;
 	}
 	int *new_state = new int[TILE_CNT];
-	std::memcpy(new_state, cur->state, sizeof new_state);
-	Node *child = new Node(new_state, cur->path_cost + 1, 0, UP, cur);
+	std::memcpy(new_state, cur.state, sizeof (int[TILE_CNT]));
+	Node *child = new Node(new_state, cur.path_cost + 1, 0, UP, &cur);
 	delete[] new_state;
 	return child;
 }
 
-Node* Problem::moveBlankDown(Node *cur)
+Node* Problem::moveBlankDown(Node &cur)
 {
-	int blank_ind = getBlankIndex(cur->state);
+	int blank_ind = getBlankIndex(cur.state);
 	if((blank_ind + PUZZLE_DIMENSION) >= TILE_CNT)
 	{
 		return NULL;
 	}
 	int *new_state = new int[TILE_CNT];
-	std::memcpy(new_state, cur->state, sizeof new_state);
-	Node *child = new Node(new_state, cur->path_cost + 1, 0, DOWN, cur);
+	std::memcpy(new_state, cur.state, sizeof (int[TILE_CNT]));
+	Node *child = new Node(new_state, cur.path_cost + 1, 0, DOWN, &cur);
 	delete[] new_state;
 	return child;
 }
 
-Node* Problem::moveBlankLeft(Node *cur)
+Node* Problem::moveBlankLeft(Node &cur)
 {
-	int blank_ind = getBlankIndex(cur->state);
+	int blank_ind = getBlankIndex(cur.state);
 	if((blank_ind % PUZZLE_DIMENSION) == 0)
 	{
 		return NULL;
 	}
 	int *new_state = new int[TILE_CNT];
-	std::memcpy(new_state, cur->state, sizeof new_state);
-	Node *child = new Node(new_state, cur->path_cost + 1, 0, LEFT, cur);
+	std::memcpy(new_state, cur.state, sizeof (int[TILE_CNT]));
+	Node *child = new Node(new_state, cur.path_cost + 1, 0, LEFT, &cur);
 	delete[] new_state;
 	return child;
 }
 
-Node* Problem::moveBlankRight(Node *cur)
+Node* Problem::moveBlankRight(Node &cur)
 {
-	int blank_ind = getBlankIndex(cur->state);
+	int blank_ind = getBlankIndex(cur.state);
 	if(((blank_ind + 1) % PUZZLE_DIMENSION) == 0)
 	{
 		return NULL;
 	}
 	int *new_state = new int[TILE_CNT];
-	std::memcpy(new_state, cur->state, sizeof new_state);
-	Node *child = new Node(new_state, cur->path_cost + 1, 0, RIGHT, cur);
+	std::memcpy(new_state, cur.state, sizeof(int[TILE_CNT]));
+	Node *child = new Node(new_state, cur.path_cost + 1, 0, RIGHT, &cur);
 	delete[] new_state;
 	return child;
 }
