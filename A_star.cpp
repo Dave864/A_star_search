@@ -216,6 +216,41 @@ bool inFrontier(int *cur_state)
 	return false;
 }
 
+//Shows how to get to goal
+void goalPath(Node *goal)
+{
+	if(goal->parent == NULL)
+	{
+		printf("Start state:");
+		goal->pstate();
+	}
+	else
+	{
+		goalPath(goal->parent);
+		switch(goal->prev_act)
+		{
+			case LEFT:
+				printf("Move the blank left...\n");
+				break;
+			case RIGHT:
+				printf("Move the blank right...\n");
+				break;
+			case UP:
+				printf("Move the blank up...\n");
+				break;
+			case DOWN:
+				printf("Move the blank down...\n");
+				break;
+			default:
+				printf("Don't know how you get here...\n");
+				break;
+		}
+		goal->pstate();
+	}
+	printf("\n");
+	return;
+}
+
 //Expands the leaf node into its child components
 void expand(Problem &tile_problem, Node leaf/*, heuristic*/)
 {
@@ -286,6 +321,8 @@ void graphSearch(Problem tile_problem/*, heuristic*/)
 		{
 			//Success, return path from leaf to root
 			printf("Goal!!\n");
+			//Show how to get to goal
+			goalPath(&leaf);
 			return;
 		}
 		printStep(&leaf);
