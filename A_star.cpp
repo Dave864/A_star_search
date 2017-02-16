@@ -8,27 +8,15 @@
 //Node comparison class for use in the frontier priority queue
 class nodeComparison
 {
-	bool reverse;
 	public:
-		nodeComparison(bool revparam = false)
-		{
-			reverse = revparam;
-		}
 		bool operator() (Node *lhs, Node *rhs)
 		{
-			if(reverse)
-			{
-				return (*lhs > *rhs);
-			}
-			else
-			{
-				return (*lhs < *rhs);
-			}
+			return ((lhs->path_cost + lhs->h_cost) < (rhs->path_cost + rhs->h_cost));
 		}
 };
 
-int puzzle[TILE_CNT] = {};
-int valid_numbers[TILE_CNT] = {};
+std::vector<int> puzzle (TILE_CNT, 0);
+std::vector<int> valid_numbers (TILE_CNT, 0);
 std::vector<Node> explored;
 std::vector<Node> frontier_contents;
 std::priority_queue<Node*, std::vector<Node*>, nodeComparison> frontier;
@@ -174,9 +162,9 @@ void customPuzzleMaker()
 }
 
 //Compares the contents of two int arrays and returns true if they are the same
-bool sameState(const int *lhs, const int *rhs)
+bool sameState(const std::vector<int> lhs, const std::vector<int> rhs)
 {
-	for(int i = 0; i < TILE_CNT; i++)
+	for(unsigned int i = 0; i < TILE_CNT; i++)
 	{
 		if(lhs[i] != rhs[i])
 		{
@@ -187,11 +175,11 @@ bool sameState(const int *lhs, const int *rhs)
 }
 
 //Checks to see if the state of the node is in the frontier
-bool inFrontier(Node *node)
+bool inFrontier(Node node)
 {
 	for(unsigned int i = 0; i < frontier_contents.size(); i++)
 	{
-		if(sameState(node->state, frontier_contents[i].state))
+		if(sameState(node.state, frontier_contents[i].state))
 		{
 			return true;
 		}
@@ -200,11 +188,11 @@ bool inFrontier(Node *node)
 }
 
 //Checks to see if the state of the node in in the explored set
-bool inExplored(Node *node)
+bool inExplored(Node node)
 {
 	for(unsigned int i = 0; i < explored.size(); i++)
 	{
-		if(sameState(node->state, explored[i].state))
+		if(sameState(node.state, explored[i].state))
 		{
 			return true;
 		}
@@ -213,11 +201,11 @@ bool inExplored(Node *node)
 }
 
 //Removes node from frontier_contents
-void removeFrontierContent(Node *node)
+void removeFrontierContent(Node node)
 {
 	for(unsigned int i = 0; i < frontier_contents.size(); i++)
 	{
-		if(sameState(node->state, frontier_contents[i].state))
+		if(sameState(node.state, frontier_contents[i].state))
 		{
 			frontier_contents.erase(frontier_contents.begin()+i);
 			return;
@@ -227,13 +215,13 @@ void removeFrontierContent(Node *node)
 }
 
 //Expands the leaf node into its child components
-void expand(Problem &tile_problem, Node *leaf/*, heuristic*/)
+void expand(Problem &tile_problem, Node leaf/*, heuristic*/)
 {
 	//Expand by moving the blank left
 	Node *left_child = tile_problem.moveBlankLeft(leaf);
 	if(left_child != NULL)
 	{
-		if(!inExplored(left_child) || !inFrontier(left_child))
+		if(!inExplored(*left_child) && !inFrontier(*left_child))
 		{
 			//apply heuristic
 			frontier.push(left_child);
@@ -245,17 +233,17 @@ void expand(Problem &tile_problem, Node *leaf/*, heuristic*/)
 	if(right_child != NULL)
 	{
 		//apply heuristic
-		if(!inExplored(right_child) || !inFrontier(right_child))
+		if(!inExplored(*right_child) && !inFrontier(*right_child))
 		{
-			frontier.push(left_child);
-			frontier_contents.push_back(*left_child);
+			frontier.push(right_child);
+			frontier_contents.push_back(*right_child);
 		}
 	}
 	//Expand by moving the blank up
 	Node *up_child = tile_problem.moveBlankUp(leaf);
 	if(up_child != NULL)
 	{
-		if(!inExplored(up_child) || !inFrontier(up_child))
+		if(!inExplored(*up_child) && !inFrontier(*up_child))
 		{
 			//apply heuristic
 			frontier.push(up_child);
@@ -266,7 +254,7 @@ void expand(Problem &tile_problem, Node *leaf/*, heuristic*/)
 	Node *down_child = tile_problem.moveBlankDown(leaf);
 	if(down_child != NULL)
 	{
-		if(!inExplored(down_child) || !inFrontier(down_child))
+		if(!inExplored(*down_child) && !inFrontier(*down_child))
 		{
 			//apply heuristic
 			frontier.push(down_child);
@@ -290,16 +278,16 @@ void graphSearch(Problem tile_problem/*, heuristic*/)
 			printf("Failed to solve the puzzle.\n");
 			return;
 		}
-		Node *leaf = frontier.top();
+		Node leaf = *(frontier.top());
 		frontier.pop();
 		removeFrontierContent(leaf);
-		if(sameState(tile_problem.getGoal(), leaf->state))
+		if(sameState(tile_problem.getGoal(), leaf.state))
 		{
 			//Success, return path from leaf to root
 			printf("Successfully solved the puzzle!\n");
 			return;
 		}
-		explored.push_back(*leaf);
+		explored.push_back(leaf);
 		expand(tile_problem, leaf);
 	}
 	return;
