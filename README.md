@@ -21,5 +21,6 @@ The program displays the trace that leads to the solution if there is one.
 The program tells you if there is no solution.
 
 ## Known Bugs and Errors
-The program currently only recieves input from the user. There is no code to actually run an A* search.
-The program does exit until a valid puzzle is entered, if you choose to enter a custom puzzle.
+The program only handles the Uniform Cost Search heuristic. There are no options to choose any other heuristic.
+The program does not display the trace from the start state to the goal state if a solution is found. The program does not exit until a valid puzzle is entered, if you choose to enter a custom puzzle.
+The program has only been tested on the Linux operating system. The program may not work on other operating systems.
