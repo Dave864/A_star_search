@@ -199,8 +199,8 @@ int manDistH(int *state)
 			h_val += std::abs(num_y - ind_y) + std::abs(num_x - ind_x);
 		}
 	}
-	//return h_val;
-	return 0;
+	return h_val;
+	//return 0;
 }
 
 //Determine which heuristic to use
@@ -378,7 +378,7 @@ void expand(Problem &tile_problem, Node leaf, hfunc myH)
 }
 
 //The main loop of the A_star search
-void graphSearch(Problem tile_problem, hfunc myH)
+void graphSearch(Problem &tile_problem, hfunc myH)
 {
 	Node start(tile_problem.getStart());
 	frontier.push(&start);
