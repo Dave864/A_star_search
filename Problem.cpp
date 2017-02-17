@@ -45,40 +45,111 @@ void Node::getState()
 		}
 	}
 }
+//End of Node functions
 
-/*bool Node::operator <(Node &rhs)
-{
-	return((this->path_cost + this->h_cost) < (rhs.path_cost + rhs.h_cost));
-}
-
-bool Node::operator >(Node &rhs)
-{
-	return((this->path_cost + this->h_cost) > (rhs.path_cost + rhs.h_cost));
-}
-
-bool Node::operator ==(Node &rhs)
-{
-	return((this->path_cost + this->h_cost) == (rhs.path_cost + rhs.h_cost));
-}*/
-
-/*
 //Tree functions
-Tree::Tree(int *state)
+Tree::tNode::tNode(Node &n)
+:parent(NULL), u_child(NULL), d_child(NULL), l_child(NULL), r_child(NULL)
 {
-	root = new Node(state);
-	cur = NULL;
+	info = new Node(n);
+}
+
+Tree::tNode::~tNode()
+{
+	delete info;
+	if(u_child != NULL)
+	{
+		delete u_child;
+	}
+	if(d_child != NULL)
+	{
+		delete d_child;
+	}
+	if(l_child != NULL)
+	{
+		delete l_child;
+	}
+	if(r_child != NULL)
+	{
+		delete r_child;
+	}
+	parent = NULL;
+}
+
+Tree::Tree()
+{
+	root = NULL;
+	cur = root;
+}
+
+Tree::Tree(Node &start)
+{
+	root = new tNode(start);
+	cur = root;
 }
 
 Tree::~Tree()
 {
+	cur = NULL;
 	delete root;
-	delete cur;
 }
 
-void Tree::add_child(char *state, action prev_act, int h_cost)
+void Tree::printPathR(tNode *c)
 {
-}*/
+	if(c->parent == NULL)
+	{
+		printf("Start state:");
+		c->info->getState();
+	}
+	else
+	{
+		printPathR(c->parent);
+		switch(c->info->prev_act)
+		{
+			case LEFT:
+				printf("Move the blank left...\n");
+				break;
+			case RIGHT:
+				printf("Move the blank right...\n");
+				break;
+			case UP:
+				printf("Move the blank up...\n");
+				break;
+			case DOWN:
+				printf("Move the blank down...\n");
+				break;
+			default:
+				printf("Don't know how you get here...\n");
+				break;
+		}
+		c->info->getState();
+	}
+	printf("\n");
+	return;
+}
 
+void Tree::printPath()
+{
+	printPathR(cur);
+	return;
+}
+
+void Tree::addUp(Node &child)
+{
+}
+
+void Tree::addDown(Node &child)
+{
+}
+
+void Tree::addLeft(Node &child)
+{
+}
+
+void Tree::addRight(Node &child)
+{
+}
+//End of Tree functions
 
 //Problem functions
 Problem::Problem(int *input)

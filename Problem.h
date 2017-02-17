@@ -20,27 +20,42 @@ struct Node
 	~Node();
 
 	void getState();
-
-	/*bool operator <(Node &rhs);
-	bool operator >(Node &rhs);
-	bool operator ==(Node &rhs);*/
 };
 
-/*
+
 class Tree
 {
-		Node *root;
-		Node *cur;
-	
-	public
-		//Constructor
-		Tree(int *state);
+	struct tNode
+	{
+		Node *info;
+		tNode *parent;
+		tNode *u_child;
+		tNode *d_child;
+		tNode *l_child;
+		tNode *r_child;
 
-		//Destructor
+		tNode(Node &n);
+		~tNode();
+	};
+	
+	tNode *root;
+	tNode *cur;
+	int expand_cnt;
+
+	void printPathR(tNode *c);
+
+	public:
+		Tree();
+		Tree(Node &start);
 		~Tree();
 
-		void add_child(int *state, action prev_act, int h_cost = 0);
-};*/
+		void printPath();
+
+		void addUp(Node &child);
+		void addDown(Node &child);
+		void addLeft(Node &child);
+		void addRight(Node &child);
+};
 
 class Problem
 {

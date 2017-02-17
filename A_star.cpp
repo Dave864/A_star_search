@@ -286,43 +286,6 @@ bool inFrontier(int *cur_state)
 	return false;
 }
 
-/*
-//Shows how to get to goal
-void goalPath(Node *goal)
-{
-	if(goal->parent == NULL)
-	{
-		printf("Start state:");
-		goal->pstate();
-	}
-	else
-	{
-		goalPath(goal->parent);
-		switch(goal->prev_act)
-		{
-			case LEFT:
-				printf("Move the blank left...\n");
-				break;
-			case RIGHT:
-				printf("Move the blank right...\n");
-				break;
-			case UP:
-				printf("Move the blank up...\n");
-				break;
-			case DOWN:
-				printf("Move the blank down...\n");
-				break;
-			default:
-				printf("Don't know how you get here...\n");
-				break;
-		}
-		goal->pstate();
-	}
-	printf("\n");
-	return;
-}
-*/
-
 //Expands the leaf node into its child components
 void expand(Problem &tile_problem, Node leaf, hfunc myH)
 {
@@ -380,30 +343,38 @@ void expand(Problem &tile_problem, Node leaf, hfunc myH)
 //The main loop of the A_star search
 void graphSearch(Problem &tile_problem, hfunc myH)
 {
+	int expanded_cnt = 0;
+	int max_queue_size = 0;
 	Node start(tile_problem.getStart());
 	frontier.push(&start);
 	frontier_contents.push_back(start);
 	bool first_node = true;
 	while(1)
 	{
+		max_queue_size = (frontier.size() > (unsigned int)max_queue_size)? frontier.size() : max_queue_size;
 		if(frontier.empty())
 		{
 			//Failure
-			printf("Failed to find a solution\n");
+			printf("Failed to find a solution...\n\n");
+			printf("The search algorithm expanded a total of %d nodes\n", expanded_cnt);
+			printf("The maximum number of nodes in the queue at any one time was %d\n", max_queue_size);
+			printf("The depth of the goal node was %d\n", leaf.path_cost);
 			return;
 		}
 		Node leaf = *frontier.top();
 		frontier.pop();
 		if(sameState(tile_problem.getGoal(), leaf.state))
 		{
-			//Success, return path from leaf to root
-			printf("Goal!!\n");
-			//Show how to get to goal
-			//goalPath(&leaf);
+			//Success
+			printf("Goal!!\n\n");
+			printf("To solve this problem the search algorithm expanded a total of %d nodes\n", expanded_cnt);
+			printf("The maximum number of nodes in the queue at any one time was %d\n", max_queue_size);
+			printf("The depth of the goal node was %d\n", leaf.path_cost);
 			return;
 		}
 		printStep(&leaf, first_node);
 		explored.push_back(leaf);
+		expanded_cnt++;
 		expand(tile_problem, leaf, myH);
 		first_node = false;
 	}
