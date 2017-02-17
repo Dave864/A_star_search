@@ -1,6 +1,7 @@
 #include <iostream>
 #include <queue>
 #include <vector>
+#include <cmath>
 #include <string.h>
 #include "Problem.h"
 
@@ -14,6 +15,7 @@ class nodeComparison
 		}
 };
 
+typedef int (*hfunc)(int *);
 int puzzle[TILE_CNT] = {};
 int valid_numbers[TILE_CNT] = {};
 std::vector<Node> explored;
@@ -160,18 +162,86 @@ void customPuzzleMaker()
 	}while(duplicate_num);
 }
 
-//Display to std output what the current step of the algorithm is
-void printStep(Node *node)
+//Returns 0 for Uniform Cost Search
+int ucs(int *state)
 {
-	if(node->parent == NULL)
+	return 0;
+}
+
+//Calculates the Misplaced Tile hueristic for a state
+int misTileH(int *state)
+{
+	int h_val = 0;
+	for(int i = 0; i < TILE_CNT; i++)
+	{
+		if(state[i] != 0 && (state[i] - 1) != i)
+		{
+			h_val++;
+		}
+	}
+	return h_val;
+}
+
+//Calculates the Manhattan Distance hueristic for a state
+int manDistH(int *state)
+{
+	int h_val = 0;
+	int ind_x, ind_y;
+	int num_x, num_y;
+	for(int i = 0; i < TILE_CNT; i++)
+	{
+		if(state[i] != 0 && (state[i] - 1) != i)
+		{
+			num_y = (state[i] - 1)/PUZZLE_DIMENSION;
+			num_x = (state[i] - 1) - (PUZZLE_DIMENSION * num_y);
+			ind_y = i/PUZZLE_DIMENSION;
+			ind_x = i - (PUZZLE_DIMENSION * ind_y);
+			h_val += std::abs(num_y - ind_y) + std::abs(num_x - ind_x);
+		}
+	}
+	//return h_val;
+	return 0;
+}
+
+//Determine which heuristic to use
+hfunc heuristicChoice()
+{
+	printf("\nEnter your choice of algorithm\n\t1. Uniform Cost Search\n\t2. A* with the Misplaced Tile heuristic\n\t3. A* with the Manhattan distance heuristic\n");
+	printf("Enter a number 1, 2, or 3: ");
+	std::string input;
+	std::cin >> input;
+	for(; input != "1" && input != "2" && input != "3"; std::cin >> input)
+	{
+		printf("Invalid input entered!\n");
+		printf("Enter a number 1, 2, or 3: ");
+	}
+	printf("\n");
+	if(input == "1")
+	{
+		return ucs;
+	}
+	else if(input == "2")
+	{
+		return misTileH;
+	}
+	else
+	{
+		return manDistH;
+	}
+}
+
+//Display to std output what the current step of the algorithm is
+void printStep(Node *node, bool first_node)
+{
+	if(first_node)
 	{
 		printf("Expanding state\n");
-		node->pstate();
+		node->getState();
 	}
 	else
 	{
 		printf("The best state to expand with a g(n) = %d and h(n) = %d is...\n", node->path_cost, node->h_cost);
-		node->pstate();
+		node->getState();
 		printf("\tExpanding this node\n");
 	}
 	printf("\n");
@@ -216,6 +286,7 @@ bool inFrontier(int *cur_state)
 	return false;
 }
 
+/*
 //Shows how to get to goal
 void goalPath(Node *goal)
 {
@@ -250,9 +321,10 @@ void goalPath(Node *goal)
 	printf("\n");
 	return;
 }
+*/
 
 //Expands the leaf node into its child components
-void expand(Problem &tile_problem, Node leaf/*, heuristic*/)
+void expand(Problem &tile_problem, Node leaf, hfunc myH)
 {
 	//Create up child
 	Node *up_child = tile_problem.moveBlankUp(leaf);
@@ -261,6 +333,7 @@ void expand(Problem &tile_problem, Node leaf/*, heuristic*/)
 		if(!inExplored(up_child->state) && !inFrontier(up_child->state))
 		{
 			//apply heuristic
+			up_child->h_cost = myH(up_child->state);
 			frontier.push(up_child);
 			frontier_contents.push_back(*up_child);
 		}
@@ -272,6 +345,7 @@ void expand(Problem &tile_problem, Node leaf/*, heuristic*/)
 		if(!inExplored(down_child->state) && !inFrontier(down_child->state))
 		{
 			//apply heuristic
+			down_child->h_cost = myH(down_child->state);
 			frontier.push(down_child);
 			frontier_contents.push_back(*down_child);
 		}
@@ -283,6 +357,7 @@ void expand(Problem &tile_problem, Node leaf/*, heuristic*/)
 		if(!inExplored(left_child->state) && !inFrontier(left_child->state))
 		{
 			//apply heuristic
+			left_child->h_cost = myH(left_child->state);
 			frontier.push(left_child);
 			frontier_contents.push_back(*left_child);
 		}
@@ -294,6 +369,7 @@ void expand(Problem &tile_problem, Node leaf/*, heuristic*/)
 		if(!inExplored(right_child->state) && !inFrontier(right_child->state))
 		{
 			//apply heuristic
+			right_child->h_cost = myH(right_child->state);
 			frontier.push(right_child);
 			frontier_contents.push_back(*right_child);
 		}
@@ -302,11 +378,12 @@ void expand(Problem &tile_problem, Node leaf/*, heuristic*/)
 }
 
 //The main loop of the A_star search
-void graphSearch(Problem tile_problem/*, heuristic*/)
+void graphSearch(Problem tile_problem, hfunc myH)
 {
 	Node start(tile_problem.getStart());
 	frontier.push(&start);
 	frontier_contents.push_back(start);
+	bool first_node = true;
 	while(1)
 	{
 		if(frontier.empty())
@@ -322,12 +399,13 @@ void graphSearch(Problem tile_problem/*, heuristic*/)
 			//Success, return path from leaf to root
 			printf("Goal!!\n");
 			//Show how to get to goal
-			goalPath(&leaf);
+			//goalPath(&leaf);
 			return;
 		}
-		printStep(&leaf);
+		printStep(&leaf, first_node);
 		explored.push_back(leaf);
-		expand(tile_problem, leaf);
+		expand(tile_problem, leaf, myH);
+		first_node = false;
 	}
 	return;
 }
@@ -356,6 +434,6 @@ int main(int argc, char **argv)
 		customPuzzleMaker();
 	}
 	Problem my_problem(puzzle);
-	graphSearch(my_problem);
+	graphSearch(my_problem, heuristicChoice());
 	return 0;
 }

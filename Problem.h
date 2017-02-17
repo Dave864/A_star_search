@@ -9,18 +9,17 @@ enum action {UP, DOWN, LEFT, RIGHT, NONE};
 
 struct Node
 {
-	Node *parent;
 	int *state;
 	int path_cost;
 	int h_cost;
 	action prev_act;
 
-	Node(int *s, int c = 0, int h = 0, action a = NONE, Node *p = NULL);
+	Node(int *s, int c = 0, int h = 0, action a = NONE);
 	Node(const Node &og_node);
 
 	~Node();
 
-	void pstate();
+	void getState();
 
 	/*bool operator <(Node &rhs);
 	bool operator >(Node &rhs);

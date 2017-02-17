@@ -2,8 +2,8 @@
 #include <iostream>
 
 //Node functions
-Node::Node(int *s, int c, int h, action a, Node *p)
-:parent(p), path_cost(c), h_cost(h), prev_act(a)
+Node::Node(int *s, int c, int h, action a)
+:path_cost(c), h_cost(h), prev_act(a)
 {
 	state = new int[TILE_CNT];
 	memcpy(state, s, sizeof (int[TILE_CNT]));
@@ -11,7 +11,6 @@ Node::Node(int *s, int c, int h, action a, Node *p)
 
 Node::Node(const Node &og_node)
 {
-	parent = og_node.parent;
 	path_cost = og_node.path_cost;
 	h_cost = og_node.h_cost;
 	prev_act = og_node.prev_act;
@@ -22,12 +21,11 @@ Node::Node(const Node &og_node)
 Node::~Node()
 {
 	delete[] state;
-	parent = NULL;
 }
 
-void Node::pstate()
+void Node::getState()
 {
-	for(unsigned i = 0; i < TILE_CNT; i++)
+	for(int i = 0; i < TILE_CNT; i++)
 	{
 		if((i % PUZZLE_DIMENSION) == 0)
 		{
@@ -137,7 +135,7 @@ Node* Problem::moveBlankUp(Node &cur)
 	std::memcpy(new_state, cur.state, sizeof (int[TILE_CNT]));
 	new_state[blank_ind] = new_state[blank_ind - PUZZLE_DIMENSION];
 	new_state[blank_ind - PUZZLE_DIMENSION] = 0;
-	Node *child = new Node(new_state, cur.path_cost + 1, 0, UP, &cur);
+	Node *child = new Node(new_state, cur.path_cost + 1, 0, UP);
 	delete[] new_state;
 	return child;
 }
@@ -153,7 +151,7 @@ Node* Problem::moveBlankDown(Node &cur)
 	std::memcpy(new_state, cur.state, sizeof (int[TILE_CNT]));
 	new_state[blank_ind] = new_state[blank_ind + PUZZLE_DIMENSION];
 	new_state[blank_ind + PUZZLE_DIMENSION] = 0;
-	Node *child = new Node(new_state, cur.path_cost + 1, 0, DOWN, &cur);
+	Node *child = new Node(new_state, cur.path_cost + 1, 0, DOWN);
 	delete[] new_state;
 	return child;
 }
@@ -169,7 +167,7 @@ Node* Problem::moveBlankLeft(Node &cur)
 	std::memcpy(new_state, cur.state, sizeof (int[TILE_CNT]));
 	new_state[blank_ind] = new_state[blank_ind - 1];
 	new_state[blank_ind - 1] = 0;
-	Node *child = new Node(new_state, cur.path_cost + 1, 0, LEFT, &cur);
+	Node *child = new Node(new_state, cur.path_cost + 1, 0, LEFT);
 	delete[] new_state;
 	return child;
 }
@@ -185,7 +183,7 @@ Node* Problem::moveBlankRight(Node &cur)
 	std::memcpy(new_state, cur.state, sizeof(int[TILE_CNT]));
 	new_state[blank_ind] = new_state[blank_ind + 1];
 	new_state[blank_ind + 1] = 0;
-	Node *child = new Node(new_state, cur.path_cost + 1, 0, RIGHT, &cur);
+	Node *child = new Node(new_state, cur.path_cost + 1, 0, RIGHT);
 	delete[] new_state;
 	return child;
 }
