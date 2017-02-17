@@ -61,7 +61,7 @@ To remove the dependency files and the executable, use the following command:
 
         Failed to find a solution...
 
-		The program displays the number of nodes expanded, the maximum number of nodes in the frontier at any one time, and the depth of the goal node
+    The program displays the number of nodes expanded, the maximum number of nodes in the frontier at any one time, and the depth of the goal node
 
 ## Known Bugs and Errors
 The program does not display the trace from the start state to the goal state if a solution is found. The program does not exit until a valid puzzle is entered, if you choose to enter a custom puzzle.
