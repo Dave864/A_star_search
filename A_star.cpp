@@ -358,7 +358,6 @@ void graphSearch(Problem &tile_problem, hfunc myH)
 			printf("Failed to find a solution...\n\n");
 			printf("The search algorithm expanded a total of %d nodes\n", expanded_cnt);
 			printf("The maximum number of nodes in the queue at any one time was %d\n", max_queue_size);
-			printf("The depth of the goal node was %d\n", leaf.path_cost);
 			return;
 		}
 		Node leaf = *frontier.top();
