@@ -1,4 +1,4 @@
-#A_star_search
+# A-star search
 An implementation of the A* search algorithm used to solve the 8-tile puzzle.
 
 This program tests three different heuristics
